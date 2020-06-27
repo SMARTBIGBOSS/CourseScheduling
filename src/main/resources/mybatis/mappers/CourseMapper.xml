@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ 		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.anqili.application.dao.CourseDao">
+	<resultMap id="CourseResultMap" type="com.anqili.application.bean.Course" >
+    	<id property="courId" column="id" />
+        <result property="courName" column="name" />
+        <result property="courCode" column="code" />
+        <result property="courSize" column="size" />
+        <result property="year" column="year" />
+    </resultMap>
+    <resultMap id="CourseSubjectMap" type="com.anqili.application.bean.SubjectCourse" >
+    	<id property="sub_courId" column="id" />
+    	<result property="subjectId" column="subjectId" />
+    	<result property="courseId" column="courseId" />
+    	<association property="subject" column="subjectId" select="com.anqili.application.dao.SubjectDao.selectSubjectById">
+ 	    <!--
+ 	    <result property="subjectId" column="subjId" />
+        <result property="subjectName" column="subjectName" />
+        <result property="classTime" column="classTime" />
+        <result property="labTime" column="labTime" />
+        <result property="teacherId" column="teacherId" />
+        <result property="teacherName" column="teacherName" />
+        -->
+        </association>
+        <collection property="course" column="courseId" select="selectCourseById"></collection>
+        <!--  
+        <result property="courseId" column="courseId" />
+        <result property="courseName" column="courseName" />
+        <result property="courseCode" column="courseCode" />
+        <result property="courseSize" column="courseSize" />
+        <result property="courseYear" column="courseYear" />
+        -->
+    </resultMap>
+    
+    <!-- Select all courses -->
+    <select id="selectAllCourse" resultMap="CourseResultMap">
+    	select * from course order by year;
+    </select>
+    
+    <!-- Select a course by ID -->
+    <select id="selectCourseById" resultMap="CourseResultMap">
+    	select * from course where id = #{courId};
+    </select>
+    
+    <!-- Select course by subject ID -->
+    <select id="selectCourseBySubject" resultMap="CourseSubjectMap">
+    
+    	select s_c.id, s_c.courseId, 
+			<!--c.name as courseName, c.code as courseCode, c.size as courseSize, c.year as courseYear,-->
+			s_c.subjectId, 
+			<!--s.name as subjectName, s.classTime, s.labTime, -->
+			s.teacherId, t.name as teacherName 
+		from ((subject_course as s_c inner join course as c ON s_c.courseId = c.id) 
+		inner join subject as s ON s_c.subjectId = s.id) 
+		inner join teacher as t ON s.teacherId = t.id
+		where s_c.subjectId = #{subjectId}
+		order by (s.classTime + s.labTime) desc;
+
+    </select>
+    
+    <!-- Select course by year -->
+    <select id="selectCourseByYear" resultMap="CourseResultMap">
+    	select * from course where year = #{year} order by size desc;
+    </select>
+    
+    <!-- Update a course by ID -->
+    <update id="updateCourse" parameterType="Course">
+    	update course
+    	set name = #{courName}, code = #{courCode}, size = #{courSize}, year = #{year}
+    	where id = #{courId};
+    </update>
+    
+    <!-- delete a course by ID -->
+    <delete id="deleteOneCourse">
+    	delete from course where id = #{courseId};
+    	delete from subject_course where courseId = #{courseId};
+    </delete>
+    
+    <!-- Insert a new course -->
+    <insert id="insertCourse" parameterType="Course">
+    	insert into course (name, code, size, year) value (#{courName}, #{courCode}, #{courSize}, #{year});
+    </insert>
+</mapper>
