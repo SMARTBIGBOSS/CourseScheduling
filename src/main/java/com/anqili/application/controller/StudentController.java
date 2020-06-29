@@ -33,13 +33,13 @@ public class StudentController {
 	
 	//get students by course
 	@GetMapping("/student/course")
-	public List<Student> getStudentByCourse(@RequestParam("courseid") int courseId) {
+	public List<Student> getStudentByCourse(@RequestParam("courseId") int courseId) {
 		return studentService.getStudentByCourse(courseId);
 	}
 	
 	//edit a student by Id
 	@PutMapping("/student")
-	public boolean putStudent(@RequestParam("stuid") int stuId, @RequestBody Student newStudent) {
+	public boolean putStudent(@RequestParam("stuId") int stuId, @RequestBody Student newStudent) {
 		return studentService.updateStudent(stuId, newStudent);
 	}
 	

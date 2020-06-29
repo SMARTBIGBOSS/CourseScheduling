@@ -3,35 +3,40 @@
  		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.anqili.application.dao.StudentDao">
-	<resultMap id="studentResultMap" type="com.anqili.application.bean.Student" >
+    <resultMap id="StudentCourseMap" type="com.anqili.application.bean.Student">
     	<id property="stuId" column="id" />
-        <result property="stuNum" column="number" />
-        <result property="stuName" column="name" />
-        <result property="courseId" column="courseId" />
+    	<result property="stuNum" column="number" />
+    	<result property="stuName" column="name" />
+    	<result property="courseId" column="courseId" />
+    	<association property="course" column="courseId" select="com.anqili.application.dao.CourseDao.selectCourseById"></association>
     </resultMap>
     
     <!-- Select student by ID -->
-    <select id="selectStudentById" resultMap="studentResultMap">
-    	select * from student order by id;
+    <select id="selectStudentById" resultMap="StudentCourseMap">
+    	select * from student where id = #{stuId};
     </select>
     
     <!-- Select student by student number -->
-    <select id="selectStudentByNum" resultMap="studentResultMap">
+    <select id="selectStudentByNum" resultMap="StudentCourseMap">
     	select * from student where number = #{stuNum};
     </select>
     
-    <!-- Select student by courseID -->
-    <select id="selectStudentByCourse">
-    	select id, name, number, couseId, course.code, course.name 
-    	from student left join course ON student.courseId = course.id
-    	where id = #{courseId};
+    <!-- Select students by courseID -->
+    <select id="selectStudentByCourse" resultMap="StudentCourseMap">
+    	select s.id, s.name, s.number, s.courseId 
+    	from student as s left join course as c ON s.courseId = c.id
+    	where s.courseId = #{courseId};
     </select>
-    
+   
     <!-- Update a specific student by ID -->
     <update id="updateStudent">
-    	
+    	update student
+    	set name = #{stuName}, number = #{stuNum}, courseId = #{courseId} 
+    	where id = #{stuId};
     </update>
     
     <!-- Insert a new student -->
-    <insert id="insertStudent"></insert>
+    <insert id="insertStudent">
+    	insert into student (name, number, courseId) value (#{stuName}, #{stuNum}, #{courseId});
+    </insert>
 </mapper>

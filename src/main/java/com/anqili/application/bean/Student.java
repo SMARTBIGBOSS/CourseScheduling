@@ -5,6 +5,7 @@ public class Student {
 	private String stuNum;
 	private String stuName;
 	private int courseId;
+	private Course course;
 	
 	public int getStuId() {
 		return stuId;
@@ -30,10 +31,16 @@ public class Student {
 	public void setCourseId(int courseId) {
 		this.courseId = courseId;
 	}
+	public Course getCourse() {
+		return course;
+	}
+	public void setCourse(Course course) {
+		this.course = course;
+	}
 	@Override
 	public String toString() {
 		return "Student [stuId=" + stuId + ", stuNum=" + stuNum + ", stuName=" + stuName + ", courseId=" + courseId
-				+ "]";
+				+ ", course=" + course + "]";
 	}
 	
 }
