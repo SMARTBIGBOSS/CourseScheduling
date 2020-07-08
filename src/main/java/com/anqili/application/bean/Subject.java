@@ -44,5 +44,10 @@ public class Subject {
 	public void setTeacher(Teacher teacher) {
 		this.teacher = teacher;
 	}
+	@Override
+	public String toString() {
+		return "Subject [subjId=" + subjId + ", subjName=" + subjName + ", classTime=" + classTime + ", labTime="
+				+ labTime + ", teachId=" + teachId + ", teacher=" + teacher + "]";
+	}
 	
 }

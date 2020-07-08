@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ 		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.anqili.application.dao.RoomDao">
+	<resultMap type="com.anqili.application.bean.Room" id="RoomResultMap">
+		<id property="roomId" column="id"/>
+		<result property="building" column="building" />
+		<result property="number" column="number" />
+		<result property="capacity" column="capacity" />
+	</resultMap>
+	
+	<!-- Select all rooms order by building and descending capacity -->
+	<select id="selectAllRoom" resultMap="RoomResultMap">
+		select * from room group by building, capacity desc, id;
+	</select>
+	
+	<!-- Select a specific room by id -->
+	<select id="selectRoomById" resultMap="RoomResultMap">
+		select * from room where id = #{roomId};
+	</select>
+	
+	<!-- Select rooms by building -->
+	<select id="selectRoomByBuilding" resultMap="RoomResultMap">
+		select * from room where building = #{building} order by capacity desc;
+	</select>
+	
+	<!-- Select rooms which capacity is over course size -->
+	<select id="selectRoomByCapacity" resultMap="RoomResultMap">
+		select * from room where capacity >= #{size};
+	</select>
+	
+	<!-- Update a room by its id -->
+	<update id="updateRoom">
+		update room
+		set building = #{building}, number =  #{number}, capacity = #{capacity} 
+		where id = #{roomId};
+	</update>
+	
+	<!-- Insert a new room -->
+	<insert id="insertRoom">
+		insert into room (building, number, capacity) value (#{building}, #{number}, #{capacity});
+	</insert>
+	
+	<!-- Delete a room by its id -->
+	<delete id="deleteOneRoom">
+		delete from room where id = #{roomId};
+	</delete>
+</mapper>

@@ -46,7 +46,6 @@
     
     <!-- Select course by subject ID -->
     <select id="selectCourseBySubject" resultMap="CourseSubjectMap">
-    
     	select s_c.id, s_c.courseId, 
 			<!--c.name as courseName, c.code as courseCode, c.size as courseSize, c.year as courseYear,-->
 			s_c.subjectId, 
@@ -57,7 +56,6 @@
 		inner join teacher as t ON s.teacherId = t.id
 		where s_c.subjectId = #{subjectId}
 		order by (s.classTime + s.labTime) desc;
-
     </select>
     
     <!-- Select course by year -->

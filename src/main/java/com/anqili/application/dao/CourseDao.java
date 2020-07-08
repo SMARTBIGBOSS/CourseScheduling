@@ -23,6 +23,6 @@ public interface CourseDao {
 	//Delete a course by id
 	boolean deleteOneCourse(int courseId);
 	
-	//insert a new course
+	//Insert a new course
 	boolean insertCourse(Course course);
 }

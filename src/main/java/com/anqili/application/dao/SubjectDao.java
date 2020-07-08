@@ -8,7 +8,7 @@ public interface SubjectDao{
 	//Select all subjects
 	List<Subject> selectAllSubject();
 	
-	//select subject by id
+	//Select subject by id
 	Subject selectSubjectById(int subjectId);
 	
 	//Select subjects by course ID

@@ -53,5 +53,11 @@ public class SubjectCourse {
 	public void setTeacherName(String teacherName) {
 		this.teacherName = teacherName;
 	}
+	@Override
+	public String toString() {
+		return "SubjectCourse [sub_courId=" + sub_courId + ", courseId=" + courseId + ", subjectId=" + subjectId
+				+ ", course=" + course + ", subject=" + subject + ", teacherId=" + teacherId + ", teacherName="
+				+ teacherName + "]";
+	}
 
 }
