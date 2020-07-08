@@ -14,7 +14,7 @@ public interface StudentDao {
 	//select student by course
 	List<Student> selectStudentByCourse(int courseId);
 	
-	//update a specific student by his ID
+	//update a specific student by studentId
 	boolean updateStudent(Student newstudent);
 	
 	//insert a new student

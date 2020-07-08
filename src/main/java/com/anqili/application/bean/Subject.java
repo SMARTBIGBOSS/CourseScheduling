@@ -6,6 +6,7 @@ public class Subject {
 	private int classTime;
 	private int labTime;
 	private int teachId;
+	private Teacher teacher;
 	
 	public int getSubjId() {
 		return subjId;
@@ -37,10 +38,11 @@ public class Subject {
 	public void setTeachId(int teachId) {
 		this.teachId = teachId;
 	}
-	@Override
-	public String toString() {
-		return "Subject [subjId=" + subjId + ", subjName=" + subjName + ", classTime=" + classTime + ", labTime="
-				+ labTime + ", teachId=" + teachId + "]";
+	public Teacher getTeacher() {
+		return teacher;
+	}
+	public void setTeacher(Teacher teacher) {
+		this.teacher = teacher;
 	}
 	
 }

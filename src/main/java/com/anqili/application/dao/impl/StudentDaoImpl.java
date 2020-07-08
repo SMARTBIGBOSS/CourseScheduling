@@ -11,7 +11,7 @@ import com.anqili.application.bean.Student;
 import com.anqili.application.dao.StudentDao;
 
 @Repository
-public class StudentDaoImp implements StudentDao {
+public class StudentDaoImpl implements StudentDao {
 	@Autowired
 	private SqlSession sqlSession;
 	

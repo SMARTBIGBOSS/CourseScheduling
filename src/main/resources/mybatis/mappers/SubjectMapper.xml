@@ -33,15 +33,13 @@
         <result property="courseYear" column="courseYear" />
         -->
     </resultMap>
-    <resultMap id="SubjectTeacherMap" type="com.anqili.application.bean.SubjectTeacher">
+    <resultMap id="SubjectTeacherMap" type="com.anqili.application.bean.Subject">
     	<id property="subjId" column="id" />
         <result property="subjName" column="subjectName" />
         <result property="classTime" column="classTime" />
         <result property="labTime" column="labTime" />
-        <result property="teacherId" column="teacherId" />
-        <result property="teacherName" column="teacherName" />
-        <result property="teacherNumber" column="teacherNum" />
-        <result property="teacherDepartment" column="teacherDept" />
+        <result property="teachId" column="teacherId" />
+        <association property="teacher" column="teacherId" select="com.anqili.application.dao.TeacherDao.selectTeacherById"/>
     </resultMap>
     
     <!-- Select all subjects -->

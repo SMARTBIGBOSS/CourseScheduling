@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper
+ 		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.anqili.application.dao.TeacherDao">
+    <resultMap id="TeacherMap" type="com.anqili.application.bean.Teacher">
+    	<id property="teachId" column="id" />
+    	<result property="teachNum" column="number" />
+    	<result property="teachName" column="name" />
+    	<result property="department" column="department" />
+    	<result property="status" column="status" />
+    </resultMap>
+    <resultMap id="TeacherSubject" type="com.anqili.application.bean.Teacher">
+    	<id property="teachId" column="id" />
+    	<result property="teachNum" column="number" />
+    	<result property="teachName" column="name" />
+    	<result property="department" column="department" />
+    	<result property="status" column="status" />
+    	<association property="subject" column="id" select="com.anqili.application.dao.SubjectDao.selectSubjectById">
+    	</association>
+    </resultMap>
+
+     
+    <!-- Select teacher by ID -->
+    <select id="selectTeacherById" resultMap="TeacherMap">
+    	select * from teacher where id = #{teachId};
+    </select>
+    
+    <!-- Select teacher by teacher number -->
+    <select id="selectTeacherByNum" resultMap="TeacherMap">
+    	select * from teacher where number = #{teachNum};
+    </select>
+    
+    <!-- Select teachers by department -->
+    <select id="selectTeacherByDept" resultMap="TeacherMap">
+    	select * from teacher where department = #{dept};
+    </select>
+   
+   <!-- Select teachers by status -->
+   <select id="selectTeacherByStatus" resultMap="TeacherMap">
+        select * from teacher where status = #{status};
+   </select>
+   
+   <!-- Select teachers by subjectId -->
+   <select id="selectTeacherBySubject" resultMap="TeacherSubject">
+        select t.*, s.*
+        from subject as s inner join teacher as t ON s.teacherId = t.id 
+        where s.id = #{subjectId}
+   </select>
+   
+    <!-- Update a specific teacher by ID -->
+    <update id="updateTeacher">
+    	update teacher
+    	set name = #{teachName}, number = #{teachNum}, department = #{department}, status = #{status}
+    	where id = #{teachId};
+    </update>
+    
+    <!-- Insert a new student -->
+    <insert id="insertTeacher">
+    	insert into teacher (name, number, department, status) value (#{teachName}, #{teachNum}, #{department}, #{status});
+    </insert>
+</mapper>
