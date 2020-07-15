@@ -10,29 +10,7 @@
         <result property="labTime" column="labTime" />
         <result property="teachId" column="teacherId" />
     </resultMap>
-    <resultMap id="SubjectCourseMap" type="com.anqili.application.bean.SubjectCourse" >
-    	<id property="sub_courId" column="id" />
-    	<result property="courseId" column="courseId" />
- 	    <result property="subjectId" column="subjectId" />
-    	<association property="course" column="courseId" select="com.anqili.application.dao.CourseDao.selectCourseById">
- 	    <!--
- 	    <result property="subjectId" column="subjId" />
-        <result property="subjectName" column="subjectName" />
-        <result property="classTime" column="classTime" />
-        <result property="labTime" column="labTime" />
-        <result property="teacherId" column="teacherId" />
-        <result property="teacherName" column="teacherName" />
-        -->
-        </association>
-        <collection property="subject" column="subjectId" select="selectSubjectById"></collection>
-        <!--  
-        <result property="courseId" column="courseId" />
-        <result property="courseName" column="courseName" />
-        <result property="courseCode" column="courseCode" />
-        <result property="courseSize" column="courseSize" />
-        <result property="courseYear" column="courseYear" />
-        -->
-    </resultMap>
+    
     <resultMap id="SubjectTeacherMap" type="com.anqili.application.bean.Subject">
     	<id property="subjId" column="id" />
         <result property="subjName" column="subjectName" />
@@ -50,20 +28,6 @@
     <!-- Select a subject by ID -->
     <select id="selectSubjectById" resultMap="SubjectResultMap">
     	select * from subject where id = #{subjId};
-    </select>
-    
-    <!-- Select subjects by course ID -->
-    <select id="selectSubjectByCourse" resultMap="SubjectCourseMap">
-		select s_c.id, s_c.courseId, 
-			<!--c.name as courseName, c.code as courseCode, c.size as courseSize, c.year as courseYear,-->
-			s_c.subjectId, 
-			<!--s.name as subjectName, s.classTime, s.labTime, -->
-			s.teacherId, t.name as teacherName 
-		from ((subject_course as s_c inner join course as c ON s_c.courseId = c.id) 
-		inner join subject as s ON s_c.subjectId = s.id) 
-		inner join teacher as t ON s.teacherId = t.id
-		where s_c.courseId = #{courseId}
-		order by (s.classTime + s.labTime) desc;
     </select>
     
     <!-- Select subjects by teacher ID -->

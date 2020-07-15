@@ -11,9 +11,6 @@ public interface SubjectDao{
 	//Select subject by id
 	Subject selectSubjectById(int subjectId);
 	
-	//Select subjects by course ID
-	List<Subject> selectSubjectByCourse(int courseId);
-	
 	//Select subjects by teacherID
 	List<Subject> selectSubjectByTeacher(int teacherId);
 	

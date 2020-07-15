@@ -31,12 +31,6 @@ public class SubjectController {
 			return this.subjectService.getSubjectById(subjectId);
 		}
 	
-	//get subjects by courseId
-	@GetMapping("/subjects/course")
-	public List<Subject> getSubjectByCourse(@RequestParam("course") int courseId) {
-		return this.subjectService.getSubjectByCourse(courseId);
-	}
-	
 	//get subjects by teacherId
 	@GetMapping("/subjects/teacher")
 	public List<Subject> getSubjectByTeacher(@RequestParam("teacher") int teacherId) {

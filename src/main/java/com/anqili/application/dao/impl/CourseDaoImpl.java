@@ -26,11 +26,6 @@ public class CourseDaoImpl implements CourseDao {
 	}
 
 	@Override
-	public List<Course> selectCourseBySubject(int subjectId) {
-		return sqlSession.selectList("selectCourseBySubject", subjectId);
-	}
-
-	@Override
 	public List<Course> selectCourseByYear(int year) {
 		return sqlSession.selectList("selectCourseByYear", year);
 	}

@@ -23,11 +23,6 @@ public class SubjectServiceImpl implements SubjectService {
 	public Subject getSubjectById(int subjectId) {
 		return subjectDao.selectSubjectById(subjectId);
 	}
-
-	@Override
-	public List<Subject> getSubjectByCourse(int courseId) {
-		return subjectDao.selectSubjectByCourse(courseId);
-	}
 	
 	@Override
 	public List<Subject> getSubjectByTeacher(int teacherId) {

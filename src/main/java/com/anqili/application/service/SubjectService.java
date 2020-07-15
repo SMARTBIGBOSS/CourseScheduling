@@ -11,9 +11,6 @@ public interface SubjectService {
 	//get subject by id
 	Subject getSubjectById(int subjectId);
 	
-	//get subjects by courseId
-	List<Subject> getSubjectByCourse(int courseId);
-	
 	//get subjects by teacherId
 	List<Subject> getSubjectByTeacher(int teacherId);
 	

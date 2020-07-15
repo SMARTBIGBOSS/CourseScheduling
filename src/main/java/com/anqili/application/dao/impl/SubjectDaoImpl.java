@@ -23,11 +23,6 @@ public class SubjectDaoImpl implements SubjectDao {
 	public Subject selectSubjectById(int subjectId) {
 		return sqlSession.selectOne("selectBySubjectId",subjectId);
 	}
-
-	@Override
-	public List<Subject> selectSubjectByCourse(int courseId) {
-		return sqlSession.selectList("selectSubjectByCourse", courseId);
-	}
 	
 	@Override
 	public List<Subject> selectSubjectByTeacher(int teacherId) {

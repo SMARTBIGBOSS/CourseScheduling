@@ -26,11 +26,6 @@ public class CourseServiceImpl implements CourseService {
 	}
 
 	@Override
-	public List<Course> getCourseBySubjectId(int subjectId) {
-		return courseDao.selectCourseBySubject(subjectId);
-	}
-
-	@Override
 	public List<Course> getCourseByYear(int year) {
 		return courseDao.selectCourseByYear(year);
 	}

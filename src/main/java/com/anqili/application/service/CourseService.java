@@ -11,9 +11,6 @@ public interface CourseService {
 	//get course by id
 	Course getCourseById(int courseId);
 	
-	//get course by subjectId
-	List<Course> getCourseBySubjectId(int subjectId);
-	
 	//get course by year
 	List<Course> getCourseByYear(int year);
 	

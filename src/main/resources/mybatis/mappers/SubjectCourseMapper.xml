@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ 		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.anqili.application.dao.SubjectCourseDao">
+    <resultMap id="SubjectCourseMap" type="com.anqili.application.bean.SubjectCourse" >
+    	<id property="sub_courId" column="id" />
+    	<result property="courseId" column="courseId"/>
+    	<result property="subjectId" column="subjectId"/>
+    	<association property="course" column="courseId" select="com.anqili.application.dao.CourseDao.selectCourseById">
+        </association>
+        <collection property="subject" column="subjectId" select="com.anqili.application.dao.SubjectDao.selectSubjectById"></collection>
+    </resultMap>
+    
+    <resultMap type="com.anqili.application.bean.SubjectCourse" id="CourseMap">
+    	<id property="sub_courId" column="id" />
+    	<association property="course" column="courseId" select="com.anqili.application.dao.CourseDao.selectCourseById">
+        </association>
+    </resultMap>
+    
+    <!-- Select subjects by course ID -->
+    <select id="selectSubjectByCourse" resultMap="SubjectCourseMap">
+		select s_c.id, s_c.courseId, s_c.subjectId, s.teacherId, t.name as teacherName 
+		from ((subject_course as s_c inner join course as c ON s_c.courseId = c.id) 
+		inner join subject as s ON s_c.subjectId = s.id) 
+		inner join teacher as t ON s.teacherId = t.id
+		where s_c.courseId = #{courseId}
+		order by (s.classTime + s.labTime) desc;
+    </select>
+    
+    <!-- Select course by subject ID -->
+    <select id="selectCourseBySubject" resultMap="SubjectCourseMap">
+    	select s_c.id, s_c.courseId, s_c.subjectId, s.teacherId, t.name as teacherName 
+		from ((subject_course as s_c inner join course as c ON s_c.courseId = c.id) 
+		inner join subject as s ON s_c.subjectId = s.id) 
+		inner join teacher as t ON s.teacherId = t.id
+		where s_c.subjectId = #{subjectId}
+		order by (s.classTime + s.labTime) desc;
+    </select>
+        
+    <select id="selecctAllCourseWithSubject" resultMap="CourseMap">
+    	select s_c.id, s_c.courseId from subject_course as s_c inner join course as c ON s_c.courseId = c.id
+    	group by s_c.courseId;
+    </select>
+    
+    <insert id="insertSubjectToCourse" parameterType="SubjectCourse">
+    	insert into subject_course (courseId, subjectId) value (#{courseId}, #{subjectId})
+    </insert>
+    
+    <delete id="deleteSubjectFromCourse">
+    	delete from subject_course where id = #{sub_courId};
+    </delete>
+</mapper>

@@ -11,9 +11,6 @@ public interface CourseDao {
 	//Select a course by id
 	Course selectCourseById(int courseId);
 	
-	//Select courses by subject ID
-	List<Course> selectCourseBySubject(int subjectId);
-	
 	//Select courses by year
 	List<Course> selectCourseByYear(int year);
 	

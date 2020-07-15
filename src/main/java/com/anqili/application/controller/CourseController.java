@@ -26,12 +26,6 @@ public class CourseController {
 		return this.courseService.getAllCourse();
 	}
 	
-	//get courses by subjectId
-	@GetMapping("/courses/subject")
-	public List<Course> getCourseBySubject(@RequestParam("subject") int subjectId) {
-		return this.courseService.getCourseBySubjectId(subjectId);
-	}
-	
 	//get courses by year
 	@GetMapping("/courses/year")
 	public List<Course> getCourseByYear(@RequestParam("year") int year) {
