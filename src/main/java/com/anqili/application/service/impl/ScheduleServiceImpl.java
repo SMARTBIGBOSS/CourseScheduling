@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -78,39 +79,86 @@ public class ScheduleServiceImpl implements ScheduleService{
 	}
 	
 	//count subjects hours/week of each course
-	public List<Map<Integer,int[]>> subjectsTime (List<Entry<Integer, Double>> sortCourseWeight, int week){
-		List<Map<Integer,int[]>> subjectsTime = new ArrayList<Map<Integer,int[]>>();
-		List<Map<Integer,int[]>> errorSubjectsTime = new ArrayList<Map<Integer,int[]>>();
+	public Map<Integer,Map<Integer,Integer>> coursesTime (List<Entry<Integer, Double>> sortCourseWeight, int week){
+		Map<Integer,Map<Integer,Integer>> coursesTime = new HashMap<Integer,Map<Integer,Integer>>();
+		Map<Integer,Map<Integer,Integer>> errorCoursesTime = new HashMap<Integer,Map<Integer,Integer>>();
 		
 		for(int i = 0; i < sortCourseWeight.size(); i++) {
-			int courseId = sortCourseWeight.get(i).getKey();
-			List<SubjectCourse> subjects = subjectCourseDao.selectSubjectByCourse(courseId);
-			int[] subjectTime = new int[subjects.size()];//each subject time(hours/week)
-			int sum = 0;
-			for(int j = 0; j < subjectTime.length; j++) {
-				subjectTime[j] = (int)Math.ceil((double)(subjects.get(j).getSubject().getClassTime()+subjects.get(j).getSubject().getLabTime())/week);
-				sum += subjectTime[j];
+			int courseId = sortCourseWeight.get(i).getKey();//get course
+			List<SubjectCourse> subjects = subjectCourseDao.selectSubjectByCourse(courseId);//all subjects of the course
+			Map<Integer, Integer> subjectTime = new HashMap<Integer,Integer>();//save each subject time(hours/week){subId:time}
+			int sum = 0;//use to check if the course total learning time over 40h.
+			
+			//count each subject total time(class time + lab time)
+			for(int j = 0; j < subjects.size(); j++) {
+				int subId = subjects.get(j).getSubjectId();
+				int time = (int)Math.ceil((double)(subjects.get(j).getSubject().getClassTime()+subjects.get(j).getSubject().getLabTime())/week);
+				subjectTime.put(subId, time);
+				sum += time;
 			}
-			Map<Integer,int[]> courSubMap = new HashMap<Integer,int[]>();
-			courSubMap.put(courseId, subjectTime);
-			subjectsTime.add(courSubMap);
+			coursesTime.put(courseId, subjectTime);
 			if(sum>40) {
-				errorSubjectsTime.add(courSubMap);
+				errorCoursesTime.put(courseId, subjectTime);
 			}
 		}
-		if(errorSubjectsTime.size() > 0) {
-//			System.out.println("有专业排课不合理");
-			return errorSubjectsTime;
+		if(errorCoursesTime.size() > 0) {
+//			System.out.println("有专业排课不合理，一周总课时超过40小时");
+			return errorCoursesTime;
 		}
-		return subjectsTime;
-		
-
+		return coursesTime;
 	}
 	
 	//Arrange course timetable and teacher timetable
-	public void SubjectSchedule(List<Entry<Integer, Double>> sortCourseWeight, 
-			List<int[]> subjectsTime, int weeks){
-		
+	public Map<Integer,int[][]> CourseSchedule(Map<Integer,Map<Integer,Integer>> coursesTime, int weeks){
+		Map<Integer,int[][]> coursesTimetable = new HashMap<Integer,int[][]>();
+		for(Entry<Integer,Map<Integer,Integer>> c : coursesTime.entrySet()) {
+			int courseId = c.getKey();
+			Map<Integer,Integer> subjectsMap = c.getValue();
+			int[][] courseTimetable = new int[8][5];
+			int segment = 0,date = 0;
+			courseTimetable =  SubjectArrangement(subjectsMap,courseTimetable,segment,date);
+			coursesTimetable.put(courseId, courseTimetable);
+		}
+		return coursesTimetable;
+	}
 
+	public int[][] SubjectArrangement(Map<Integer,Integer> subjectsMap, int[][] timetable, int segment, int date) {
+		if(!subjectsMap.isEmpty()) {
+			Iterator<Map.Entry<Integer, Integer>> entries = subjectsMap.entrySet().iterator();
+			while(entries.hasNext()) {
+				Entry<Integer, Integer> subject = entries.next();
+				int subId = subject.getKey();
+				int subTime = subject.getValue();
+					if(subTime>=2) {
+						while(timetable[segment][date] != 0) {
+							if(date<4) {
+								date += 1;
+								continue;
+							}
+							date = 0 ;
+							segment += 2;
+						}
+						timetable[segment][date] = subId;
+						timetable[segment+1][date] = subId;
+						subject.setValue(subTime-2);
+					}else if(subTime>=1) {
+						while(timetable[segment][date] != 0) {
+							if(date<4) {
+								date += 1;
+								continue;
+							}
+							date = 0 ;
+							segment += 2;
+						}
+							timetable[segment][date] = subId;
+							subject.setValue(subTime-1);
+						
+					}else {
+						entries.remove();
+					}
+			}
+			SubjectArrangement(subjectsMap,timetable,segment,date);
+		}
+		return timetable;
 	}
 }

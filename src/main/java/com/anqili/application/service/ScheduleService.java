@@ -7,5 +7,6 @@ import java.util.Map.Entry;
 public interface ScheduleService {
 	
 	List<Entry<Integer, Double>> countCourseWeight();
-	List<Map<Integer,int[]>> subjectsTime (List<Entry<Integer, Double>> sortCourseWeight, int week);
+	Map<Integer,Map<Integer,Integer>> coursesTime (List<Entry<Integer, Double>> sortCourseWeight, int week);
+	Map<Integer,int[][]> CourseSchedule(Map<Integer,Map<Integer,Integer>> coursesTime, int weeks);
 }
