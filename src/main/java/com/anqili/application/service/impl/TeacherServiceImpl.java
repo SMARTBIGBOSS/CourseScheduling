@@ -37,7 +37,7 @@ public class TeacherServiceImpl implements TeacherService {
 	}
 
 	@Override
-	public List<Teacher> getTeacherBysubject(int subjectId) {
+	public Teacher getTeacherBysubject(int subjectId) {
 		return teacherDao.selectTeacherBySubject(subjectId);
 	}
 

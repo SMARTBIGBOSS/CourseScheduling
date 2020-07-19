@@ -17,6 +17,14 @@ public class SubjectCourseServiceImpl implements SubjectCourseService {
 	private SubjectCourseDao subjectCourseDao;
 	
 	@Override
+	public SubjectCourse getSubCourId(int courId, int subId) {
+		SubjectCourse courSub = new SubjectCourse();
+		courSub.setCourseId(courId);
+		courSub.setSubjectId(subId);
+		return subjectCourseDao.selectSubCourId(courSub);
+	}
+	
+	@Override
 	public List<SubjectCourse> getCourseBySubjectId(int subjectId) {
 		return subjectCourseDao.selectCourseBySubject(subjectId);
 	}

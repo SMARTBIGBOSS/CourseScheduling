@@ -16,6 +16,11 @@ public class SubjectCourseDaoImpl implements SubjectCourseDao {
     private SqlSession sqlSession;
 	
 	@Override
+	public SubjectCourse selectSubCourId(SubjectCourse courSub) {
+		return sqlSession.selectOne("selectSubCourId", courSub);
+	}
+	
+	@Override
 	public List<SubjectCourse> selectSubjectByCourse(int courseId) {
 		return sqlSession.selectList("selectSubjectByCourse", courseId);
 	}

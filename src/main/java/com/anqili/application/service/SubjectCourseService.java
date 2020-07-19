@@ -6,6 +6,8 @@ import com.anqili.application.bean.SubjectCourse;
 
 public interface SubjectCourseService {
 	
+	//get sub_courId by courId and subId
+	SubjectCourse getSubCourId(int courIdd, int subId);
 	//get course by subjectId
 	List<SubjectCourse> getCourseBySubjectId(int subjectId);
 	

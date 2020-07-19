@@ -18,7 +18,7 @@ public interface TeacherDao {
 	List<Teacher> selectTeacherByStatus(int status);
 	
 	//select teachers by subjectId
-	List<Teacher> selectTeacherBySubject(int subjectId);
+	Teacher selectTeacherBySubject(int subjectId);
 	
 	//update a specific teacher by teacherId
 	boolean updateTeacher(Teacher newTeacher);

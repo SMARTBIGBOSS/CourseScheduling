@@ -18,7 +18,7 @@ public interface TeacherService {
 	List<Teacher> getTeacherByStatus(int status);
 	
 	//get teachers by subjectId
-	List<Teacher> getTeacherBysubject(int subjectId);
+	Teacher getTeacherBysubject(int subjectId);
 	
 	//update a teacher by teacherId
 	boolean updateTeacher(int teachId, Teacher newTeacher);

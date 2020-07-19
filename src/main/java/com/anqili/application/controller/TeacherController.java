@@ -46,7 +46,7 @@ public class TeacherController {
 	
 	//get teachers by subjectId
 	@GetMapping("teacher/subject")
-	public List<Teacher> getTeacherBySubject(@RequestParam("subId") int subjectId){
+	public Teacher getTeacherBySubject(@RequestParam("subId") int subjectId){
 		return teacherService.getTeacherBysubject(subjectId);
 	}
 	

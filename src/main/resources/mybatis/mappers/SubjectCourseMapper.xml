@@ -18,6 +18,12 @@
         </association>
     </resultMap>
     
+    <!-- Select sub_courId by courseId and subjectId -->
+    <select id="selectSubCourId" resultMap="SubjectCourseMap">
+    	select * from subject_course
+    	where courseId = #{courseId} and subjectId = #{subjectId};
+    </select>
+    
     <!-- Select subjects by course ID -->
     <select id="selectSubjectByCourse" resultMap="SubjectCourseMap">
 		select s_c.id, s_c.courseId, s_c.subjectId, s.teacherId, t.name as teacherName 

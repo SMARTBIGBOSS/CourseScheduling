@@ -26,20 +26,20 @@ public class ScheduleController {
 	@GetMapping("/s")
 	public Map<Integer,Map<Integer,Integer>> check() {
 		List<Entry<Integer, Double>> sortWeight = this.scheduleService.countCourseWeight();
-		Map<Integer,Map<Integer,Integer>> subjectsTime = this.scheduleService.coursesTime(sortWeight, 16);
+		Map<Integer,Map<Integer,Integer>> subjectsTime = this.scheduleService.countCoursesTime(sortWeight, 16);
 		return subjectsTime;
 	}
 	
 	@GetMapping("/c")
 	public Map<Integer, int[][]> checkCourseSchedule() {
-//		Map<Integer,Integer> subjectsTime = new HashMap<Integer,Integer>();
+		Map<Integer,Integer> subjectsTime = new HashMap<Integer,Integer>();
 //		subjectsTime.put(29, 5);
 //		subjectsTime.put(30, 5);
 //		subjectsTime.put(31, 1);
 //		Map<Integer,Map<Integer,Integer>> coursesTime = new HashMap<Integer,Map<Integer,Integer>>();
 //		coursesTime.put(8, subjectsTime);
 		List<Entry<Integer, Double>> sortWeight = this.scheduleService.countCourseWeight();
-		Map<Integer,Map<Integer,Integer>> coursesTime = this.scheduleService.coursesTime(sortWeight, 16);
-		return this.scheduleService.CourseSchedule(coursesTime, 1);
+		Map<Integer,Map<Integer,Integer>> coursesTime = this.scheduleService.countCoursesTime(sortWeight, 16);
+		return this.scheduleService.generateCourseTimetable(coursesTime, 1);
 	}
 }

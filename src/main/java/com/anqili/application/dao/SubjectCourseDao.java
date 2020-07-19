@@ -6,6 +6,9 @@ import com.anqili.application.bean.SubjectCourse;
 
 public interface SubjectCourseDao {
 
+	//Select sub_cour Id by courseId and subjectId
+	SubjectCourse selectSubCourId(SubjectCourse courSub);
+	
 	//Select subjects by course ID
 	List<SubjectCourse> selectSubjectByCourse(int courseId);
 	
@@ -20,4 +23,5 @@ public interface SubjectCourseDao {
 	
 	//Delete a subject from course
 	boolean deleteSubjectFromCourse(int sub_courId);
+
 }

@@ -36,8 +36,8 @@ public class TeacherDaoimpl implements TeacherDao {
 	}
 
 	@Override
-	public List<Teacher> selectTeacherBySubject(int subjectId) {
-		return sqlSession.selectList("selectTeacherBySubject", subjectId);
+	public Teacher selectTeacherBySubject(int subjectId) {
+		return sqlSession.selectOne("selectTeacherBySubject", subjectId);
 	}
 
 	@Override
