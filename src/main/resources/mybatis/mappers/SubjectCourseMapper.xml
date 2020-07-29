@@ -41,7 +41,7 @@
 		inner join subject as s ON s_c.subjectId = s.id) 
 		inner join teacher as t ON s.teacherId = t.id
 		where s_c.subjectId = #{subjectId}
-		order by (s.classTime + s.labTime) desc;
+		order by c.size desc;
     </select>
         
     <select id="selecctAllCourseWithSubject" resultMap="CourseMap">

@@ -1,5 +1,10 @@
 package com.anqili.application.service.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,6 +28,7 @@ import com.anqili.application.dao.TeacherDao;
 import com.anqili.application.dao.impl.CourseDaoImpl;
 import com.anqili.application.dao.impl.SubjectCourseDaoImpl;
 import com.anqili.application.service.CourseService;
+import com.anqili.application.service.RequiredCloneable;
 import com.anqili.application.service.ScheduleService;
 import com.anqili.application.service.SubjectCourseService;
 
@@ -39,15 +45,17 @@ public class ScheduleServiceImpl implements ScheduleService{
 	@Resource
 	private SubjectCourseService subjectCourseService;
 
-	Map<Integer,int[][]> coursesTimetable = new HashMap<Integer,int[][]>();//{courId:course[][]}
-	Map<Integer,int[][]> teachersTimetable = new HashMap<Integer,int[][]>();//{teachId:teacher[][]}
+	Map<Integer,int[][]> coursesTimetableTemp = new HashMap<Integer,int[][]>();//{courId:course[sid][sid]}
+	Map<Integer,int[][]> teachersTimetableTemp = new HashMap<Integer,int[][]>();//{teachId:teacher[sub_courid][sub_courid]}
+	
+	Map<Integer,List<int[][]>> courseTimetable = new HashMap<Integer,List<int[][]>>();
 	
 	//Calculate and sort the weight of each course. The greater weight, the higher priority.
 	public List<Entry<Integer, Double>> countCourseWeight() {
 		Map<Integer, Double> courseWeight = new HashMap<Integer,Double>();//{"key": courseId, "value": weight}
-		List<SubjectCourse> courseList = subjectCourseService.getAllCourseWithSubject();
-//		List<SubjectCourse> courseList = subjectCourseDao.selecctAllCourseWithSubject();//[{sub_courId,courseId,course}]
+		List<SubjectCourse> courseList = subjectCourseService.getAllCourseWithSubject();//[{sub_courId,courseId,course}]
 //	System.out.println("专业个数："+courseList.size());
+		
 		for(int i = 0; i < courseList.size(); i++) {
 			Course course = courseList.get(i).getCourse();
 			int totalCourseTime = 0;
@@ -64,7 +72,7 @@ public class ScheduleServiceImpl implements ScheduleService{
 //	System.out.println(" 专业比重："+w);
 			courseWeight.put(course.getCourId(), w);
 		}
-		//Sort course List ordering by weight value
+		//Sort course List ordering by weight value 
 		List<Map.Entry<Integer, Double>> sortCourseWeight = new ArrayList<Map.Entry<Integer, Double>>(courseWeight.entrySet());
 		Collections.sort(sortCourseWeight, new Comparator<Map.Entry<Integer, Double>>(){
 			public int compare(Map.Entry<Integer, Double> o1, Map.Entry<Integer, Double> o2) {
@@ -74,7 +82,7 @@ public class ScheduleServiceImpl implements ScheduleService{
 		return sortCourseWeight;
 	}
 	
-	//count subjects hours/week of each course
+	//Count max hours/week of subjects of each course to insure subject can be finish during the semester 
 	public Map<Integer,Map<Integer,Integer>> countCoursesTime (List<Entry<Integer, Double>> sortCourseWeight, int week){
 		Map<Integer,Map<Integer,Integer>> coursesTime = new HashMap<Integer,Map<Integer,Integer>>();
 		Map<Integer,Map<Integer,Integer>> errorCoursesTime = new HashMap<Integer,Map<Integer,Integer>>();
@@ -104,8 +112,8 @@ public class ScheduleServiceImpl implements ScheduleService{
 		return coursesTime;//{courseId:{sid:int,sid:int,..}}
 	}
 	
-	//Arrange course timetable
-	public Map<Integer,int[][]> generateCourseTimetable(Map<Integer,Map<Integer,Integer>> coursesTime, int weeks){
+	//Arrange course timetable template as per max hours per week of each subject
+	public Map<Integer,int[][]> generateCourseTimetableTemp(Map<Integer,Map<Integer,Integer>> coursesTime){
 //		Map<Integer,int[][]> coursesTimetable = new HashMap<Integer,int[][]>();
 		for(Entry<Integer,Map<Integer,Integer>> c : coursesTime.entrySet()) {
 			int courseId = c.getKey();
@@ -113,12 +121,12 @@ public class ScheduleServiceImpl implements ScheduleService{
 			int[][] courseTimetable = new int[8][5];
 			int segment = 0,date = 0;
 			courseTimetable =  arrangeSubject(courseId,subjectsMap,courseTimetable,segment,date);
-			coursesTimetable.put(courseId, courseTimetable);
+			coursesTimetableTemp.put(courseId, courseTimetable);
 		}
-		return coursesTimetable;
+		return coursesTimetableTemp;
 	}
 
-	//Arrange subjects and generate teacherTimetable
+	//Arrange subjects and generate teacher timetable template
 	public int[][] arrangeSubject(int courseId, Map<Integer,Integer> subjectsMap, int[][] courseTimetable, int segment, int date) {
 		if(!subjectsMap.isEmpty()) {
 			Iterator<Map.Entry<Integer, Integer>> entries = subjectsMap.entrySet().iterator();
@@ -145,7 +153,7 @@ public class ScheduleServiceImpl implements ScheduleService{
 					courseTimetable[segment+1][date] = subId;
 					teacherTimetable[segment][date] = subCour.getSub_courId();
 					teacherTimetable[segment+1][date] = subCour.getSub_courId();
-					teacherTimetable = teachersTimetable.get(teacher.getTeachId());
+					teacherTimetable = teachersTimetableTemp.get(teacher.getTeachId());
 					subject.setValue(subTime-2);
 				}else if(subTime>=1) {
 					while((courseTimetable[segment][date] == 0 && !checkTeacherTimetable(teacher,teacherTimetable,segment,date)) 
@@ -159,7 +167,7 @@ public class ScheduleServiceImpl implements ScheduleService{
 					}
 					courseTimetable[segment][date] = subId;
 					teacherTimetable[segment][date] = subCour.getSub_courId();
-					teacherTimetable = teachersTimetable.get(teacher.getTeachId());
+					teacherTimetable = teachersTimetableTemp.get(teacher.getTeachId());
 					subject.setValue(subTime-1);
 					
 				}else {
@@ -173,9 +181,139 @@ public class ScheduleServiceImpl implements ScheduleService{
 
 	//Check teacher timetable to confirm teacher is available
 	public boolean checkTeacherTimetable(Teacher teacher, int[][] teacherTimetable, int segment, int date) {
-		teacherTimetable = teachersTimetable.get(teacher.getTeachId());
+		teacherTimetable = teachersTimetableTemp.get(teacher.getTeachId());
 		if(teacherTimetable == null || teacherTimetable[segment][date] == 0)
 			return true;
 		return false;
+	}
+	
+	//Generate course timetable for whole week
+	public Map<Integer,List<int[][]>> generateCourseTimetable(Map<Integer,int[][]> coursesTimetableTemp, Map<Integer,int[][]> teachersTimetableTemp, int week) {
+		for(Entry<Integer,int[][]> ctt : coursesTimetableTemp.entrySet()) {
+			int cId = ctt.getKey();
+			int[][] ct = ctt.getValue();
+			List<SubjectCourse> subjects = subjectCourseService.getSubjectByCourse(cId);
+			Map<Integer,int[]> subjectMap = new HashMap<Integer,int[]>();//{sid:[classTime,labTime,flag]} flag=1:class; flag=-1:lab
+			HashMap<Integer,int[]> arrangeMap = new HashMap<Integer,int[]>();//{sid:[classAmong,labAmong]}
+			
+			//initialize subjectMap and arrangeMap
+			subjects.forEach(sub->{
+				int sId = sub.getSubjectId();
+				int sClassTime = sub.getSubject().getClassTime();
+				int sLabTime = sub.getSubject().getLabTime();
+				int[] arrSub = {sClassTime,sLabTime,1};
+				subjectMap.put(sId, arrSub);
+				double ctw = (double)sClassTime/week;
+				double ltw = (double)sLabTime/week;
+				int[] arrArr = {(int) (ctw>1?Math.floor(ctw):Math.ceil(ctw)),(int) (ltw>1?Math.floor(ltw):Math.ceil(ltw))};
+				arrangeMap.put(sId, arrArr);
+			});
+			
+			//generate the whole timetable
+			int counter = 1;
+			List<int[][]> schedule = new ArrayList<int[][]>();
+			while(counter <= week) {
+				Map<Integer,int[]> copyArrangeMap = new HashMap<Integer,int[]>();
+
+				copyArrangeMap = deepCloneMap(arrangeMap);
+				for(Map.Entry<Integer,int[]> entry:copyArrangeMap.entrySet()){
+
+					System.out.println(entry.getValue()[0]+" "+entry.getValue()[1]);
+				}
+				int [][] newCT = new int[8][5];
+				for(int column = 0; column < 5; column++) {
+					for(int row = 0; row < 8; row++) {
+						int[] temp = subjectMap.get(ct[row][column]);
+						int[] check = copyArrangeMap.get(ct[row][column]);
+						if(temp != null) {
+							switch(temp[2]) {
+							case 1:
+								if(temp[0] > 1) {
+									if(ct[row][column] == ct[row+1][column] && check[0]>1) {
+										newCT[row][column] = newCT[row+1][column] = ct[row][column];
+										temp[0] =  temp[0] - 2;
+										check[0] -= 2;		
+										subjectMap.put(ct[row][column], temp);
+										row++;
+									}else {
+										newCT[row][column] = ct[row][column];
+										temp[0] =  temp[0] - 1;
+										check[0] -= 1;
+										subjectMap.put(ct[row][column], temp);
+//										row --;
+									}
+								} else if(temp[0] == 1) {
+									newCT[row][column] = ct[row][column];
+									temp[0] =  temp[0] - 1;
+									check[0] -= 1;
+									subjectMap.put(ct[row][column], temp);
+								} else {
+									continue;
+								}
+								if(temp[1] != 0 && check[0] < check[1]) {
+									temp[2] = -1;
+									subjectMap.put(ct[row][column], temp);
+								}
+								continue;
+							case -1:
+								if(temp[1] > 1) {
+									if(ct[row][column] == ct[row+1][column]) {
+										newCT[row][column] = newCT[row+1][column] = 0-ct[row][column];
+										temp[1] =  temp[1] - 2;
+										check[1] -= 2;
+										subjectMap.put(ct[row][column], temp);
+										row++;
+									}else {
+										newCT[row][column] = 0-ct[row][column];
+										temp[1] =  temp[1] - 1;
+										check[1] -= 1;
+										subjectMap.put(ct[row][column], temp);
+//										row --;
+									}
+								} else if(temp[1] == 1) {
+									newCT[row][column] = 0-ct[row][column];
+									temp[1] =  temp[1] - 1;
+									check[1] -= 1;
+									subjectMap.put(ct[row][column], temp);
+								} else {
+									continue;
+								}
+								if(temp[0] != 0 && check[0] >= check[1]) {
+									temp[2] = 1;
+									subjectMap.put(ct[row][column], temp);
+								}
+								continue;
+							}
+						}
+						copyArrangeMap.put(ct[row][column], check);
+					}
+				}
+				if(schedule.add(newCT)) {
+					for(Map.Entry<Integer,int[]> entry:subjectMap.entrySet()){
+						int[] reset = entry.getValue();
+						int key = entry.getKey();
+						reset[2] = 1;
+						subjectMap.put(key, reset);
+//						System.out.println(reset[0]+" "+reset[1]+" "+reset[2]);
+					}
+					
+					counter++;
+				}
+			}
+			
+			courseTimetable.put(cId, schedule);
+		}
+		return courseTimetable;
+	}
+	
+	public Map<Integer, int[]> deepCloneMap(Map<Integer,int[]> m){
+		Map<Integer, int[]> result = new HashMap<Integer,int[]>();
+            for(Map.Entry<Integer, int[]> e : m.entrySet()) {
+            	int[] v = e.getValue().clone();
+            	
+            	result.put(e.getKey(), e.getValue().clone());
+            }
+		return result;
+		
 	}
 }
