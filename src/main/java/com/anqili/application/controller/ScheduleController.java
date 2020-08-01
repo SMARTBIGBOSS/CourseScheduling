@@ -42,6 +42,7 @@ public class ScheduleController {
 		List<Entry<Integer, Double>> sortWeight = this.scheduleService.countCourseWeight();
 		Map<Integer,Map<Integer,Integer>> coursesTime = this.scheduleService.countCoursesTime(sortWeight, 16);
 		return this.scheduleService.generateCourseTimetableTemp(coursesTime);
+//		return ScheduleService.teachersTimetableTemp;
 	}
 	
 	@GetMapping("/w")
