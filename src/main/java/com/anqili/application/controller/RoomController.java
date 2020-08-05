@@ -22,32 +22,51 @@ public class RoomController {
 	
 	//get all rooms
 	@GetMapping("/allRooms")
-	public List<Room> selectAllRoom(){
-		return roomService.selectAllRoom();
+	public List<Room> getAllRoom(){
+		return roomService.getAllRoom();
 	}
 	
 	//get room by id
 	@GetMapping("/room")
-	public Room selectRoomById(@RequestParam("roomId") int roomId) {
-		return roomService.selectRoomById(roomId);
+	public Room getRoomById(@RequestParam("roomId") int roomId) {
+		return roomService.getRoomById(roomId);
 	}
 	
-	//get rooms by building
+	//get rooms by building code
 	@GetMapping("/roomBuilding")
-	public List<Room> selectRoomByBuilding(@RequestParam("building") String building){
-		return roomService.selectRoomByBuilding(building);
+	public List<Room> getRoomByBuilding(@RequestParam("buildingCode") String buildingCode){
+		return roomService.getRoomByBuildingCode(buildingCode);
 	}
 	
 	//get rooms by over course size
 	@GetMapping("/roomOverSize")
-	public List<Room> selectRoomByCapacity(@RequestParam("size") int size){
-		return roomService.selectRoomByCapacity(size);
+	public List<Room> getRoomByCapacity(@RequestParam("size") int size){
+		return roomService.getRoomByCapacity(size);
+	}
+	
+	//get rooms by room type
+	@GetMapping("/roomType")
+	public List<Room> getRoomByType(@RequestParam("type") int type){
+		return roomService.getRoomByType(type);
+	}
+	
+	//get rooms by type and capacity
+	@GetMapping("/roomTypeSize")
+	public List<Room> getRoomByTypeCapacity(@RequestParam("type") int type, @RequestParam("size") int size){
+		return roomService.getRoomByTypeCapacity(type, size);
+	}
+	
+	//get rooms by building code, room type and capacity over course size
+	@GetMapping("/roomBuildingTypeSize")
+	public List<Room> getRoomByCodeTypeCapacity(
+			@RequestParam("buildindCode") String buildingCode, @RequestParam("type") int type, @RequestParam("size") int size){
+		return roomService.getRoomByCodeTypeCapacity(buildingCode, type, size);
 	}
 	
 	//edit room by id
 	@PutMapping("/room")
-	public boolean updateRoom(@RequestParam("roomId") int roomId, @RequestBody Room room) {
-		return roomService.updateRoom(roomId, room);
+	public boolean editRoom(@RequestParam("roomId") int roomId, @RequestBody Room room) {
+		return roomService.editRoom(roomId, room);
 	}
 	
 	//add a new room

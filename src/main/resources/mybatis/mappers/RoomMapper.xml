@@ -6,8 +6,10 @@
 	<resultMap type="com.anqili.application.bean.Room" id="RoomResultMap">
 		<id property="roomId" column="id"/>
 		<result property="building" column="building" />
+		<result property="building_code" column="building_code" />
 		<result property="number" column="number" />
-		<result property="capacity" column="capacity" />
+		<result property="capacity" column="capacity" /> 
+		<result property="type" column="type" />
 	</resultMap>
 	
 	<!-- Select all rooms order by building and descending capacity -->
@@ -20,26 +22,44 @@
 		select * from room where id = #{roomId};
 	</select>
 	
-	<!-- Select rooms by building -->
-	<select id="selectRoomByBuilding" resultMap="RoomResultMap">
-		select * from room where building = #{building} order by capacity desc;
+	<!-- Select rooms by building code -->
+	<select id="selectRoomByBuildingCode" resultMap="RoomResultMap">
+		select * from room where building_code = #{buildingCode} order by capacity;
 	</select>
 	
 	<!-- Select rooms which capacity is over course size -->
 	<select id="selectRoomByCapacity" resultMap="RoomResultMap">
-		select * from room where capacity >= #{size};
+		select * from room where capacity >= #{size} order by capacity;
+	</select>
+	
+	<!-- select rooms by room type -->
+	<select id="selectRoomByRoomType" resultMap="RoomResultMap">
+		select * from room where type = #{type};
+	</select>
+	
+	<!-- select rooms by type and capacity -->
+	<select id="selectRoomByTypeCapacity" resultMap="RoomResultMap">
+		select * from room where type =#{type} and capacity >= #{capacity} order by capacity;
+	</select>
+	
+	<!-- select rooms by building code, room type and capacity over course size -->
+	<select id="selectRoomByCodeTypeCapacity" resultMap="RoomResultMap">
+		select * from room 
+		where building_code = #{building_code} and type = #{type} and capacity >= #{capacity}
+		order by capacity;
 	</select>
 	
 	<!-- Update a room by its id -->
 	<update id="updateRoom">
 		update room
-		set building = #{building}, number =  #{number}, capacity = #{capacity} 
+		set building=#{building}, building_code=#{building_code}, number=#{number}, capacity=#{capacity}, type=#{type}
 		where id = #{roomId};
 	</update>
 	
 	<!-- Insert a new room -->
 	<insert id="insertRoom">
-		insert into room (building, number, capacity) value (#{building}, #{number}, #{capacity});
+		insert into room (building, building_code, number, capacity, type) 
+		value (#{building}, #{building_code}, #{number}, #{capacity}, #{type});
 	</insert>
 	
 	<!-- Delete a room by its id -->

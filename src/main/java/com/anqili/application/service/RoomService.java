@@ -6,19 +6,28 @@ import com.anqili.application.bean.Room;
 
 public interface RoomService {
 	//get all rooms
-	List<Room> selectAllRoom();
+	List<Room> getAllRoom();
 	
 	//get room by id
-	Room selectRoomById(int roomId);
+	Room getRoomById(int roomId);
 	
-	//get room by building
-	List<Room> selectRoomByBuilding(String building);
+	//get rooms by building
+	List<Room> getRoomByBuildingCode(String buildingCode);
 	
-	//get room which the capacity is more than course size
-	List<Room> selectRoomByCapacity(int size);
+	//get rooms which the capacity is more than course size
+	List<Room> getRoomByCapacity(int size);
 	
-	//update a room by id
-	boolean updateRoom(int roomId, Room room);
+	//get rooms by room type
+	List<Room> getRoomByType(int type);
+	
+	//get rooms by type and capacity
+	List<Room> getRoomByTypeCapacity(int type, int size);
+	
+	//get rooms by building code, room type and capacity over course size
+	List<Room> getRoomByCodeTypeCapacity(String buildingCode, int type, int size);
+	
+	//edit a room by id
+	boolean editRoom(int roomId, Room room);
 	
 	//insert a new room
 	boolean insertRoom(Room room);

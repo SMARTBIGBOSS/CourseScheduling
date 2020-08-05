@@ -39,10 +39,10 @@ public class CourseController {
 	}
 	
 	//get courses by id
-		@GetMapping("/course")
-		public Course getCourseById(@RequestParam("id") int courseId) {
-			return this.courseService.getCourseById(courseId);
-		}
+	@GetMapping("/course")
+	public Course getCourseById(@RequestParam("id") int courseId) {
+		return this.courseService.getCourseById(courseId);
+	}
 	
 	//edit a course by id
 	@PutMapping("/course")
