@@ -46,7 +46,7 @@ public class ScheduleController {
 	}
 	
 	@GetMapping("/w")
-	public Map<Integer,List<int[][]>> generateWholeSchedule(@RequestParam("week") int week){
+	public Map<Integer, Map<Integer, int[][]>> generateWholeSchedule(@RequestParam("week") int week){
 //		Map<Integer,Integer> subjectsTime = new HashMap<Integer,Integer>();
 //		subjectsTime.put(29, 5);
 //		subjectsTime.put(30, 5);
@@ -58,6 +58,7 @@ public class ScheduleController {
 		Map<Integer,int[][]> coursesTimetableTemp = this.scheduleService.generateCourseTimetableTemp(coursesTime);
 		
 		Map<Integer,int[][]> teachersTimetableTemp = new HashMap<Integer,int[][]>();
-		return this.scheduleService.generateCourseTimetable(coursesTimetableTemp, teachersTimetableTemp, week);
+	    return this.scheduleService.generateCourseTimetable(coursesTimetableTemp, teachersTimetableTemp, week);
+//		return ScheduleService.teacherTimetable;
 	}
 }

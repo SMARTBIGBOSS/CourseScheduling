@@ -26,8 +26,8 @@ public class RoomDaoImpl implements RoomDao {
 	}
 
 	@Override
-	public List<Room> selectRoomByBuilding(String building) {
-		return sqlSession.selectList("selectRoomByBuilding", building);
+	public List<Room> selectRoomByBuildingCode(String buildingCode) {
+		return sqlSession.selectList("selectRoomByBuildingCode", buildingCode);
 	}
 
 	@Override
@@ -35,6 +35,21 @@ public class RoomDaoImpl implements RoomDao {
 		return sqlSession.selectList("selectRoomByCapacity", size);
 	}
 
+	@Override
+	public List<Room> selectRoomByRoomType(int type) {
+		return sqlSession.selectList("selectRoomByRoomType", type);
+	}
+	
+	@Override
+	public List<Room> selectRoomByTypeCapacity(Room criteria){
+		return sqlSession.selectList("selectRoomByTypeCapacity", criteria);
+	}
+
+	@Override
+	public List<Room> selectRoomByCodeTypeCapacity(Room criteria) {
+		return sqlSession.selectList("selectRoomByCodeTypeCapacity", criteria);
+	}
+	
 	@Override
 	public boolean updateRoom(Room room) {
 		sqlSession.update("updateRoom", room);
@@ -52,6 +67,5 @@ public class RoomDaoImpl implements RoomDao {
 		sqlSession.delete("deleteOneRoom", roomId);
 		return true;
 	}
-
 
 }
